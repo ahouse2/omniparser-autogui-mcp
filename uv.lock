@@ -1734,6 +1734,12 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/d0/d2/a9e87b506b2094f5aa9becc1af5178842701b27217fa43877353da2577e3/mcp-1.3.0-py3-none-any.whl", hash = "sha256:2829d67ce339a249f803f22eba5e90385eafcac45c94b00cab6cef7e8f217211", size = 70672 },
 ]
 
+[package.optional-dependencies]
+cli = [
+    { name = "python-dotenv" },
+    { name = "typer" },
+]
+
 [[package]]
 name = "mdurl"
 version = "0.1.2"
@@ -2041,7 +2047,7 @@ wheels = [
 [[package]]
 name = "omniparser-mcp"
 version = "0.1.0"
-source = { virtual = "." }
+source = { editable = "." }
 dependencies = [
     { name = "accelerate" },
     { name = "anthropic", extra = ["bedrock", "vertex"] },
@@ -2055,18 +2061,22 @@ dependencies = [
     { name = "gradio" },
     { name = "groq" },
     { name = "jsonschema" },
+    { name = "mcp", extra = ["cli"] },
     { name = "numpy" },
     { name = "openai" },
     { name = "opencv-python" },
     { name = "opencv-python-headless" },
     { name = "paddleocr" },
     { name = "paddlepaddle" },
+    { name = "pandas" },
     { name = "pre-commit" },
     { name = "pyautogui" },
+    { name = "pyperclip" },
     { name = "pytest" },
     { name = "pytest-asyncio" },
     { name = "ruff" },
     { name = "screeninfo" },
+    { name = "setuptools" },
     { name = "streamlit" },
     { name = "supervision" },
     { name = "timm" },
@@ -2077,6 +2087,7 @@ dependencies = [
     { name = "transformers" },
     { name = "uiautomation" },
     { name = "ultralytics" },
+    { name = "uvicorn" },
 ]
 
 [package.optional-dependencies]
@@ -2109,18 +2120,22 @@ requires-dist = [
     { name = "langchain-mcp", marker = "extra == 'langchain'", git = "https://github.com/NON906/langchain-mcp.git" },
     { name = "langchain-openai", marker = "extra == 'langchain'", specifier = ">=0.3.6" },
     { name = "langgraph", marker = "extra == 'langchain'" },
+    { name = "mcp", extras = ["cli"], specifier = ">=1.3.0" },
     { name = "numpy", specifier = "==1.26.4" },
     { name = "openai", specifier = ">=1.58.1" },
     { name = "opencv-python", specifier = ">=4.11.0.86" },
     { name = "opencv-python-headless", specifier = ">=4.11.0.86" },
     { name = "paddleocr", specifier = ">=2.9.1" },
     { name = "paddlepaddle", specifier = ">=2.6.2" },
+    { name = "pandas", specifier = ">=2.2.3" },
     { name = "pre-commit", specifier = "==3.8.0" },
     { name = "pyautogui", specifier = "==0.9.54" },
+    { name = "pyperclip", specifier = ">=1.9.0" },
     { name = "pytest", specifier = "==8.3.3" },
     { name = "pytest-asyncio", specifier = "==0.23.6" },
     { name = "ruff", specifier = "==0.6.7" },
     { name = "screeninfo", specifier = ">=0.8.1" },
+    { name = "setuptools", specifier = ">=75.6.0" },
     { name = "streamlit", specifier = ">=1.38.0" },
     { name = "supervision", specifier = "==0.18.0" },
     { name = "timm", specifier = ">=1.0.14" },
@@ -2131,6 +2146,7 @@ requires-dist = [
     { name = "transformers", specifier = ">=4.49.0" },
     { name = "uiautomation", specifier = ">=2.0.20" },
     { name = "ultralytics", specifier = "==8.3.70" },
+    { name = "uvicorn", specifier = ">=0.34.0" },
 ]
 
 [[package]]
@@ -2766,7 +2782,7 @@ name = "pyobjc-framework-cocoa"
 version = "11.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "pyobjc-core", marker = "sys_platform != 'linux' and sys_platform != 'win32'" },
+    { name = "pyobjc-core", marker = "sys_platform == 'darwin'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/c5/32/53809096ad5fc3e7a2c5ddea642590a5f2cb5b81d0ad6ea67fdb2263d9f9/pyobjc_framework_cocoa-11.0.tar.gz", hash = "sha256:00346a8cb81ad7b017b32ff7bf596000f9faa905807b1bd234644ebd47f692c5", size = 6173848 }
 wheels = [
@@ -2780,8 +2796,8 @@ name = "pyobjc-framework-quartz"
 version = "11.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "pyobjc-core", marker = "sys_platform != 'linux' and sys_platform != 'win32'" },
-    { name = "pyobjc-framework-cocoa", marker = "sys_platform != 'linux' and sys_platform != 'win32'" },
+    { name = "pyobjc-core", marker = "sys_platform == 'darwin'" },
+    { name = "pyobjc-framework-cocoa", marker = "sys_platform == 'darwin'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/a5/ad/f00f3f53387c23bbf4e0bb1410e11978cbf87c82fa6baff0ee86f74c5fb6/pyobjc_framework_quartz-11.0.tar.gz", hash = "sha256:3205bf7795fb9ae34747f701486b3db6dfac71924894d1f372977c4d70c3c619", size = 3952463 }
 wheels = [
