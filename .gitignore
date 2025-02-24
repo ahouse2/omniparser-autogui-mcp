@@ -21,3 +21,5 @@ util/__pycache__/
 index.html?linkid=2289031
 wget-log
 weights/icon_caption_florence_v2/
+
+.env

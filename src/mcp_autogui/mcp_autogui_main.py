@@ -51,9 +51,12 @@ def mcp_autogui_main(mcp):
         def omniparser_start_thread_func():
             global omniparser
             omniparser = Omniparser(config)
-            print('Loading Omniparser is finished.', file=sys.stderr)
-        omniparser_start_thread = threading.Thread(target=omniparser_start_thread_func)
-        omniparser_start_thread.start()
+            #print('Loading Omniparser is finished.', file=sys.stderr)
+        if 'OMNI_PARSER_BACKEND_LOAD' in os.environ:
+            omniparser_start_thread = threading.Thread(target=omniparser_start_thread_func)
+            omniparser_start_thread.start()
+        else:
+            omniparser_start_thread_func()
         
     temp_dir = tempfile.TemporaryDirectory()
     dname = temp_dir.name
@@ -95,7 +98,7 @@ Return value:
 
                     detail_text = ''
                     for loop, content in enumerate(detail):
-                        detail_text += f'ID: {loop}, {content['type']}: {content['content']}\n'
+                        detail_text += f'ID: {loop}, {content["type"]}: {content["content"]}\n'
 
                     is_finished = True
             if omniparser_thread is None:
@@ -194,7 +197,7 @@ Return value:
         """The mouse scrolling wheel behavior.
 
 Args:
-    clicks: Amount of scrolling. 10 is scroll up 10 "clicks" and -10 is scroll down 10 "clicks".
+    clicks: Amount of scrolling. 1000 is scroll up 1000 "clicks" and -1000 is scroll down 1000 "clicks".
 """
         current_window.activate()
         pyautogui.moveTo(current_mouse_x, current_mouse_y)
@@ -209,7 +212,7 @@ Args:
     id: Click on the target before typing. You can check it with "omniparser_details_on_screen".
 """
         if id >= 0:
-            await autogui_click(id)
+            await omniparser_click(id)
         else:
             current_window.activate()
             pyautogui.moveTo(current_mouse_x, current_mouse_y)
