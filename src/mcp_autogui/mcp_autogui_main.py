@@ -21,7 +21,6 @@ from util.omniparser import Omniparser
 sys.path = sys.path[1:]
 
 INPUT_IMAGE_SIZE = 960
-PADDING_SIZE = 0
 
 def mcp_autogui_main(mcp):
     global omniparser
@@ -115,13 +114,13 @@ Return value:
 """
         nonlocal current_mouse_x, current_mouse_y, current_window
         screen_width, screen_height = pyautogui.size()
-        for compos in detail['compos']:
-            if compos['id'] == id:
-                current_mouse_x = int((compos['position']['column_min'] + compos['position']['column_max']) * (screen_width + PADDING_SIZE * 2) / detail['img_shape'][1] / 2) - PADDING_SIZE
-                current_mouse_y = int((compos['position']['row_min'] + compos['position']['row_max']) * (screen_height + PADDING_SIZE * 2) / detail['img_shape'][0] / 2) - PADDING_SIZE
-                pyautogui.click(x=current_mouse_x, y=current_mouse_y, button=button, clicks=clicks)
-                current_window = gw.getActiveWindow()
-                return True
+        if len(detail) > id:
+            compos = detail[id]['bbox']
+            current_mouse_x = int((compos[0] + compos[2]) * screen_width) // 2
+            current_mouse_y = int((compos[1] + compos[3]) * screen_height) // 2
+            pyautogui.click(x=current_mouse_x, y=current_mouse_y, button=button, clicks=clicks)
+            current_window = gw.getActiveWindow()
+            return True
         return False
 
     @mcp.tool()
@@ -140,15 +139,14 @@ Return value:
         screen_width, screen_height = pyautogui.size()
         from_x = -1
         to_x = -1
-        for compos in detail['compos']:
-            if compos['id'] == from_id:
-                from_x = int((compos['position']['column_min'] + compos['position']['column_max']) * (screen_width + PADDING_SIZE * 2) / detail['img_shape'][1] / 2) - PADDING_SIZE
-                from_y = int((compos['position']['row_min'] + compos['position']['row_max']) * (screen_height + PADDING_SIZE * 2) / detail['img_shape'][0] / 2) - PADDING_SIZE
-            if compos['id'] == to_id:
-                to_x = int((compos['position']['column_min'] + compos['position']['column_max']) * (screen_width + PADDING_SIZE * 2) / detail['img_shape'][1] / 2) - PADDING_SIZE
-                to_y = int((compos['position']['row_min'] + compos['position']['row_max']) * (screen_height + PADDING_SIZE * 2) / detail['img_shape'][0] / 2) - PADDING_SIZE
-        if from_x == -1 or to_x == -1:
+        if len(detail) <= from_id or len(detail) <= to_id:
             return False
+        compos = detail[from_id]['bbox']
+        from_x = int((compos[0] + compos[2]) * screen_width) // 2
+        from_y = int((compos[1] + compos[3]) * screen_height) // 2
+        compos = detail[to_id]['bbox']
+        to_x = int((compos[0] + compos[2]) * screen_width) // 2
+        to_y = int((compos[1] + compos[3]) * screen_height) // 2
         if key is not None and key != '':
             pyautogui.keyDown(key)
         pyautogui.moveTo(from_x, from_y)
@@ -171,14 +169,14 @@ Return value:
 """
         nonlocal current_mouse_x, current_mouse_y, current_window
         screen_width, screen_height = pyautogui.size()
-        for compos in detail['compos']:
-            if compos['id'] == id:
-                current_mouse_x = int((compos['position']['column_min'] + compos['position']['column_max']) * (screen_width + PADDING_SIZE * 2) / detail['img_shape'][1] / 2) - PADDING_SIZE
-                current_mouse_y = int((compos['position']['row_min'] + compos['position']['row_max']) * (screen_height + PADDING_SIZE * 2) / detail['img_shape'][0] / 2) - PADDING_SIZE
-                pyautogui.moveTo(current_mouse_x, current_mouse_y)
-                current_window = gw.getActiveWindow()
-                return True
-        return False
+        if len(detail) <= id:
+            return False
+        compos = detail[id]['bbox']
+        current_mouse_x = int((compos[0] + compos[2]) * screen_width) // 2
+        current_mouse_y = int((compos[1] + compos[3]) * screen_height) // 2
+        pyautogui.moveTo(current_mouse_x, current_mouse_y)
+        current_window = gw.getActiveWindow()
+        return True
 
     @mcp.tool()
     async def omniparser_scroll(clicks: int) -> None:
