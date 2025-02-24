@@ -24,6 +24,7 @@ INPUT_IMAGE_SIZE = 960
 
 def mcp_autogui_main(mcp):
     global omniparser
+    omniparser = None
     input_image_path = ''
     output_dir_path = ''
     omniparser_thread = None
@@ -46,7 +47,13 @@ def mcp_autogui_main(mcp):
             return args
         args = parse_arguments()
         config = vars(args)
-        omniparser = Omniparser(config)
+
+        def omniparser_start_thread_func():
+            global omniparser
+            omniparser = Omniparser(config)
+            print('Loading Omniparser is finished.', file=sys.stderr)
+        omniparser_start_thread = threading.Thread(target=omniparser_start_thread_func)
+        omniparser_start_thread.start()
         
     temp_dir = tempfile.TemporaryDirectory()
     dname = temp_dir.name
@@ -61,6 +68,10 @@ Return value:
     - Screen capture with ID number added.
 """
         nonlocal omniparser_thread, result_image, detail, is_finished
+
+        while omniparser is None:
+            await asyncio.sleep(0.1)
+
         detail_text = ''
         with redirect_stdout(sys.stderr):
             def omniparser_thread_func():
