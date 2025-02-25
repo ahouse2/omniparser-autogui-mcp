@@ -71,7 +71,7 @@ torch = [
 torchvision = [
   { index = "pytorch-cu118", marker = "sys_platform == 'linux' or sys_platform == 'win32'" },
 ]
-langchain-mcp = { git = "https://github.com/NON906/langchain-mcp.git" }
+langchain-mcp = { git = "https://github.com/NON906/langchain-mcp.git", branch = "main" }
 
 [[tool.uv.index]]
 name = "pytorch-cu118"
