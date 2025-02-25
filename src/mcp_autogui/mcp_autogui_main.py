@@ -9,11 +9,13 @@ import tempfile
 from contextlib import redirect_stdout
 import argparse
 import base64
+import json
 import pyautogui
 import pyperclip
 from mcp.server.fastmcp import Image
 import PIL
 import pygetwindow as gw
+import requests
 
 omniparser_path = os.path.join(os.path.dirname(__file__), '..', '..', 'OmniParser')
 sys.path = [omniparser_path, ] + sys.path
@@ -48,15 +50,16 @@ def mcp_autogui_main(mcp):
         args = parse_arguments()
         config = vars(args)
 
-        def omniparser_start_thread_func():
-            global omniparser
-            omniparser = Omniparser(config)
-            #print('Loading Omniparser is finished.', file=sys.stderr)
-        if 'OMNI_PARSER_BACKEND_LOAD' in os.environ:
-            omniparser_start_thread = threading.Thread(target=omniparser_start_thread_func)
-            omniparser_start_thread.start()
-        else:
-            omniparser_start_thread_func()
+        if not 'OMNI_PARSER_SERVER' in os.environ:
+            def omniparser_start_thread_func():
+                global omniparser
+                omniparser = Omniparser(config)
+                #print('Loading Omniparser is finished.', file=sys.stderr)
+            if 'OMNI_PARSER_BACKEND_LOAD' in os.environ:
+                omniparser_start_thread = threading.Thread(target=omniparser_start_thread_func)
+                omniparser_start_thread.start()
+            else:
+                omniparser_start_thread_func()
         
     temp_dir = tempfile.TemporaryDirectory()
     dname = temp_dir.name
@@ -72,8 +75,9 @@ Return value:
 """
         nonlocal omniparser_thread, result_image, detail, is_finished
 
-        while omniparser is None:
-            await asyncio.sleep(0.1)
+        if not 'OMNI_PARSER_SERVER' in os.environ:
+            while omniparser is None:
+                await asyncio.sleep(0.1)
 
         detail_text = ''
         with redirect_stdout(sys.stderr):
@@ -82,7 +86,21 @@ Return value:
                 with redirect_stdout(sys.stderr):
                     screenshot_image = pyautogui.screenshot()
 
-                    dino_labled_img, detail = omniparser.parse_raw(screenshot_image)
+                    if 'OMNI_PARSER_SERVER' in os.environ:
+                        buffered = io.BytesIO()
+                        screenshot_image.save(buffered, format='png')
+                        send_img = base64.b64encode(buffered.getvalue()).decode('ascii')
+                        json_data = json.dumps({'base64_image': send_img})
+                        response = requests.post(
+                            f"http://{os.environ['OMNI_PARSER_SERVER']}/parse/",
+                            data=json_data,
+                            headers={"Content-Type": "application/json"}
+                        )
+                        response_json = response.json()
+                        dino_labled_img = response_json['som_image_base64']
+                        detail = response_json['parsed_content_list']
+                    else:
+                        dino_labled_img, detail = omniparser.parse_raw(screenshot_image)
 
                     image_bytes = base64.b64decode(dino_labled_img)
                     result_image_local = PIL.Image.open(io.BytesIO(image_bytes))

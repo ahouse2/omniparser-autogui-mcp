@@ -42,13 +42,18 @@ dependencies = [
     "setuptools>=75.6.0",
     "pyperclip>=1.9.0",
     "mcp[cli]>=1.3.0",
+    "requests>=2.32.3",
 ]
 
 [project.scripts]
 omniparser-mcp = "mcp_autogui:main"
+omniparserserver = "omniparserserver:main"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/mcp_autogui"]
+packages = [
+  "src/mcp_autogui",
+  "src/omniparserserver"
+]
 
 [project.optional-dependencies]
 langchain = [
