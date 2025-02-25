@@ -53,9 +53,15 @@ def mcp_autogui_main(mcp):
         if not 'OMNI_PARSER_SERVER' in os.environ:
             def omniparser_start_thread_func():
                 global omniparser
+
+                sys.path = [os.path.join(os.path.dirname(__file__), '..', '..'), ] + sys.path
+                from download_models import download_omniparser_models
+                download_omniparser_models()
+                sys.path = sys.path[1:]
+
                 omniparser = Omniparser(config)
                 #print('Loading Omniparser is finished.', file=sys.stderr)
-            if 'OMNI_PARSER_BACKEND_LOAD' in os.environ:
+            if 'OMNI_PARSER_BACKEND_LOAD' in os.environ and os.environ['OMNI_PARSER_BACKEND_LOAD']:
                 omniparser_start_thread = threading.Thread(target=omniparser_start_thread_func)
                 omniparser_start_thread.start()
             else:
