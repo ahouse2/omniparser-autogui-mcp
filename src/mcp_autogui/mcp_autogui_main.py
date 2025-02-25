@@ -270,3 +270,12 @@ Args:
             pyautogui.hotkey(key1, key2)
         else:
             pyautogui.hotkey(key1)
+
+    @mcp.tool()
+    async def omniparser_wait(time: float = 1.0) -> None:
+        """Waits for the specified number of seconds.
+
+Args:
+    time: Waiting time (seconds).
+"""
+        await asyncio.sleep(time)
