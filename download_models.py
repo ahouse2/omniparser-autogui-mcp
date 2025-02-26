@@ -1,4 +1,5 @@
 import os
+import shutil
 
 def download_omniparser_models():
     from huggingface_hub import hf_hub_download
@@ -7,7 +8,7 @@ def download_omniparser_models():
         for f1 in ['train_args.yaml', 'model.pt', 'model.yaml', 'LICENSE']:
             hf_hub_download(repo_id='microsoft/OmniParser-v2.0', filename=f'icon_detect/{f1}', local_dir=weights_path)
         for f2 in ['config.json', 'generation_config.json', 'model.safetensors', 'LICENSE']:
-            hf_hub_download(repo_id='microsoft/OmniParser-v2.0', filename=f'icon_caption/{f1}', local_dir=weights_path)
+            hf_hub_download(repo_id='microsoft/OmniParser-v2.0', filename=f'icon_caption/{f2}', local_dir=weights_path)
         shutil.move(os.path.join(weights_path, 'icon_caption'), os.path.join(weights_path, 'icon_caption_florence'))
 
 def download_paddle_ocr_models():
