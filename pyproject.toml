@@ -44,6 +44,8 @@ dependencies = [
     "mcp[cli]>=1.3.0",
     "requests>=2.32.3",
 ]
+license = {text = "MIT License"}
+license-files = ["LICENSE"]
 
 [project.scripts]
 omniparser-autogui-mcp = "mcp_autogui:main"
