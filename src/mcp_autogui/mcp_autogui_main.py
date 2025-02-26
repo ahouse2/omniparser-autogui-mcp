@@ -7,7 +7,6 @@ import io
 import asyncio
 import tempfile
 from contextlib import redirect_stdout
-import argparse
 import base64
 import json
 import pyautogui
@@ -38,17 +37,13 @@ def mcp_autogui_main(mcp):
     current_mouse_x, current_mouse_y = pyautogui.position()
     current_window = gw.getActiveWindow()
     with redirect_stdout(sys.stderr):
-        def parse_arguments():
-            parser = argparse.ArgumentParser(description='Omniparser API')
-            parser.add_argument('--som_model_path', type=str, default=os.path.join(omniparser_path, 'weights/icon_detect/model.pt'), help='Path to the som model')
-            parser.add_argument('--caption_model_name', type=str, default='florence2', help='Name of the caption model')
-            parser.add_argument('--caption_model_path', type=str, default=os.path.join(omniparser_path, 'weights/icon_caption_florence'), help='Path to the caption model')
-            parser.add_argument('--device', type=str, default='cuda', help='Device to run the model')
-            parser.add_argument('--BOX_TRESHOLD', type=float, default=0.05, help='Threshold for box detection')
-            args = parser.parse_args()
-            return args
-        args = parse_arguments()
-        config = vars(args)
+        config = {
+            'som_model_path': os.environ['SOM_MODEL_PATH'] if 'SOM_MODEL_PATH' in os.environ else os.path.join(omniparser_path, 'weights/icon_detect/model.pt'),
+            'caption_model_name': os.environ['CAPTION_MODEL_NAME'] if 'CAPTION_MODEL_NAME' in os.environ else 'florence2',
+            'caption_model_path': os.environ['CAPTION_MODEL_PATH'] if 'CAPTION_MODEL_PATH' in os.environ else os.path.join(omniparser_path, 'weights/icon_caption_florence'),
+            'device': os.environ['OMNI_PARSER_DEVICE'] if 'OMNI_PARSER_DEVICE' in os.environ else 'cuda',
+            'BOX_TRESHOLD': float(os.environ['BOX_TRESHOLD']) if 'BOX_TRESHOLD' in os.environ else 0.05,
+        }
 
         if not 'OMNI_PARSER_SERVER' in os.environ:
             def omniparser_start_thread_func():
