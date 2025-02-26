@@ -1,10 +1,10 @@
 {
   "mcpServers": {
-    "omniparser_mcp": {
+    "omniparser_autogui_mcp": {
       "command": "uv",
       "args": [
         "run",
-        "omniparser-mcp"
+        "omniparser-autogui-mcp"
       ],
       "env": {
         "PYTHONIOENCODING": "utf-8",
