@@ -1,7 +1,7 @@
 [project]
-name = "omniparser-mcp"
+name = "omniparser-autogui-mcp"
 version = "0.1.0"
-description = "Add your description here"
+description = "Automatic operation of on-screen GUI."
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
@@ -46,7 +46,7 @@ dependencies = [
 ]
 
 [project.scripts]
-omniparser-mcp = "mcp_autogui:main"
+omniparser-autogui-mcp = "mcp_autogui:main"
 omniparserserver = "omniparserserver:main"
 
 [tool.hatch.build.targets.wheel]

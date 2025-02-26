@@ -2045,7 +2045,7 @@ wheels = [
 ]
 
 [[package]]
-name = "omniparser-mcp"
+name = "omniparser-autogui-mcp"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
