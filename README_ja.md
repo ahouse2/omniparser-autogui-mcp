@@ -50,6 +50,10 @@ uv run download_models.py
 - ``OMNI_PARSER_BACKEND_LOAD``  
 他のクライアント（[LibreChat](https://github.com/danny-avila/LibreChat)など）で動作しない場合、``1``と指定してください
 
+- ``TARGET_WINDOW_NAME``  
+操作させるウィンドウを指定したい場合、ウィンドウ名を指定してください  
+指定しない場合、画面全体に対して動作します
+
 - ``OMNI_PARSER_SERVER``  
 他のデバイスでOmniParserの処理を行う場合、``127.0.0.1:8000``のようにサーバーのアドレスとポートを指定してください  
 サーバーは``uv run omniparserserver``で開始できます
