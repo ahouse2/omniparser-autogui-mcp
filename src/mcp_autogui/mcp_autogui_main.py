@@ -35,7 +35,14 @@ def mcp_autogui_main(mcp):
     is_finished = False
 
     current_mouse_x, current_mouse_y = pyautogui.position()
-    current_window = gw.getActiveWindow()
+    is_set_target_window = False
+    if 'TARGET_WINDOW_NAME' in os.environ:
+        match_windows = gw.getWindowsWithTitle(os.environ['TARGET_WINDOW_NAME'])
+    if match_windows:
+        current_window = match_windows[0]
+        is_set_target_window = True
+    else:
+        current_window = gw.getActiveWindow()
     with redirect_stdout(sys.stderr):
         config = {
             'som_model_path': os.environ['SOM_MODEL_PATH'] if 'SOM_MODEL_PATH' in os.environ else os.path.join(omniparser_path, 'weights/icon_detect/model.pt'),
@@ -85,7 +92,13 @@ Return value:
             def omniparser_thread_func():
                 nonlocal result_image, detail, is_finished, detail_text
                 with redirect_stdout(sys.stderr):
+                    if is_set_target_window:
+                        current_window.activate()
+
                     screenshot_image = pyautogui.screenshot()
+
+                    if is_set_target_window:
+                        screenshot_image = screenshot_image.crop((current_window.left, current_window.top, current_window.right, current_window.bottom))
 
                     if 'OMNI_PARSER_SERVER' in os.environ:
                         buffered = io.BytesIO()
@@ -148,11 +161,14 @@ Return value:
         nonlocal current_mouse_x, current_mouse_y, current_window
         screen_width, screen_height = pyautogui.size()
         if len(detail) > id:
+            if is_set_target_window:
+                current_window.activate()
             compos = detail[id]['bbox']
-            current_mouse_x = int((compos[0] + compos[2]) * screen_width) // 2
-            current_mouse_y = int((compos[1] + compos[3]) * screen_height) // 2
+            current_mouse_x = int((compos[0] + compos[2]) * screen_width) // 2 + current_window.left
+            current_mouse_y = int((compos[1] + compos[3]) * screen_height) // 2 + current_window.top
             pyautogui.click(x=current_mouse_x, y=current_mouse_y, button=button, clicks=clicks)
-            current_window = gw.getActiveWindow()
+            if not is_set_target_window:
+                current_window = gw.getActiveWindow()
             return True
         return False
 
@@ -170,16 +186,21 @@ Return value:
 """
         nonlocal current_mouse_x, current_mouse_y, current_window
         screen_width, screen_height = pyautogui.size()
+
+        if is_set_target_window:
+            current_window.activate()
+
         from_x = -1
         to_x = -1
         if len(detail) <= from_id or len(detail) <= to_id:
             return False
         compos = detail[from_id]['bbox']
-        from_x = int((compos[0] + compos[2]) * screen_width) // 2
-        from_y = int((compos[1] + compos[3]) * screen_height) // 2
+        from_x = int((compos[0] + compos[2]) * screen_width) // 2 + current_window.left
+        from_y = int((compos[1] + compos[3]) * screen_height) // 2 + current_window.top
         compos = detail[to_id]['bbox']
-        to_x = int((compos[0] + compos[2]) * screen_width) // 2
-        to_y = int((compos[1] + compos[3]) * screen_height) // 2
+        to_x = int((compos[0] + compos[2]) * screen_width) // 2 + current_window.left
+        to_y = int((compos[1] + compos[3]) * screen_height) // 2 + current_window.top
+
         if key is not None and key != '':
             pyautogui.keyDown(key)
         pyautogui.moveTo(from_x, from_y)
@@ -188,7 +209,8 @@ Return value:
             pyautogui.keyUp(key)
         current_mouse_x = to_x
         current_mouse_y = to_y
-        current_window = gw.getActiveWindow()
+        if not is_set_target_window:
+            current_window = gw.getActiveWindow()
         return True
 
     @mcp.tool()
@@ -205,10 +227,13 @@ Return value:
         if len(detail) <= id:
             return False
         compos = detail[id]['bbox']
-        current_mouse_x = int((compos[0] + compos[2]) * screen_width) // 2
-        current_mouse_y = int((compos[1] + compos[3]) * screen_height) // 2
+        if is_set_target_window:
+            current_window.activate()
+        current_mouse_x = int((compos[0] + compos[2]) * screen_width) // 2 + current_window.left
+        current_mouse_y = int((compos[1] + compos[3]) * screen_height) // 2 + current_window.top
         pyautogui.moveTo(current_mouse_x, current_mouse_y)
-        current_window = gw.getActiveWindow()
+        if not is_set_target_window:
+            current_window = gw.getActiveWindow()
         return True
 
     @mcp.tool()
