@@ -36,6 +36,7 @@ def mcp_autogui_main(mcp):
 
     current_mouse_x, current_mouse_y = pyautogui.position()
     is_set_target_window = False
+    match_windows = None
     if 'TARGET_WINDOW_NAME' in os.environ:
         match_windows = gw.getWindowsWithTitle(os.environ['TARGET_WINDOW_NAME'])
     if match_windows:
@@ -163,9 +164,14 @@ Return value:
         if len(detail) > id:
             if is_set_target_window:
                 current_window.activate()
+                left = current_window.left
+                top = current_window.top
+            else:
+                left = 0
+                top = 0
             compos = detail[id]['bbox']
-            current_mouse_x = int((compos[0] + compos[2]) * screen_width) // 2 + current_window.left
-            current_mouse_y = int((compos[1] + compos[3]) * screen_height) // 2 + current_window.top
+            current_mouse_x = int((compos[0] + compos[2]) * screen_width) // 2 + left
+            current_mouse_y = int((compos[1] + compos[3]) * screen_height) // 2 + top
             pyautogui.click(x=current_mouse_x, y=current_mouse_y, button=button, clicks=clicks)
             if not is_set_target_window:
                 current_window = gw.getActiveWindow()
@@ -189,17 +195,22 @@ Return value:
 
         if is_set_target_window:
             current_window.activate()
+            left = current_window.left
+            top = current_window.top
+        else:
+            left = 0
+            top = 0
 
         from_x = -1
         to_x = -1
         if len(detail) <= from_id or len(detail) <= to_id:
             return False
         compos = detail[from_id]['bbox']
-        from_x = int((compos[0] + compos[2]) * screen_width) // 2 + current_window.left
-        from_y = int((compos[1] + compos[3]) * screen_height) // 2 + current_window.top
+        from_x = int((compos[0] + compos[2]) * screen_width) // 2 + left
+        from_y = int((compos[1] + compos[3]) * screen_height) // 2 + top
         compos = detail[to_id]['bbox']
-        to_x = int((compos[0] + compos[2]) * screen_width) // 2 + current_window.left
-        to_y = int((compos[1] + compos[3]) * screen_height) // 2 + current_window.top
+        to_x = int((compos[0] + compos[2]) * screen_width) // 2 + left
+        to_y = int((compos[1] + compos[3]) * screen_height) // 2 + top
 
         if key is not None and key != '':
             pyautogui.keyDown(key)
@@ -229,8 +240,13 @@ Return value:
         compos = detail[id]['bbox']
         if is_set_target_window:
             current_window.activate()
-        current_mouse_x = int((compos[0] + compos[2]) * screen_width) // 2 + current_window.left
-        current_mouse_y = int((compos[1] + compos[3]) * screen_height) // 2 + current_window.top
+            left = current_window.left
+            top = current_window.top
+        else:
+            left = 0
+            top = 0
+        current_mouse_x = int((compos[0] + compos[2]) * screen_width) // 2 + left
+        current_mouse_y = int((compos[1] + compos[3]) * screen_height) // 2 + top
         pyautogui.moveTo(current_mouse_x, current_mouse_y)
         if not is_set_target_window:
             current_window = gw.getActiveWindow()
@@ -263,8 +279,11 @@ Args:
         if content.isascii():
             pyautogui.write(content)
         else:
+            prev_clip = pyperclip.paste()
             pyperclip.copy(content)
             pyautogui.hotkey('ctrl', 'v')
+            if prev_clip:
+                pyperclip.copy(prev_clip)
 
     @mcp.tool()
     async def omniparser_get_keys_list() -> list[str]:
